@@ -19,17 +19,33 @@ import numpy
 from PIL import Image
 from docopt import docopt
 import logging
+import struct
 
 def palette(img):
   """
   Return palette in descending order of frequency
   """
+  '''
   arr = numpy.asarray(img)
   palette, index = numpy.unique(asvoid(arr).ravel(), return_inverse=True)
   palette = palette.view(arr.dtype).reshape(-1, arr.shape[-1])
   count = numpy.bincount(index)
   order = numpy.argsort(count)
   return palette[order[::-1]]
+  '''
+  points = {}
+  arr = numpy.asarray(img)
+  data = asvoid(arr).ravel()
+  for point in data:
+    while len(point) < 4:
+      point = b'\x00' + point
+    point_color = struct.unpack(">L", point)
+    if point in points.keys():
+      points[point] += 1
+    else:
+      points[point] = 1
+
+  return len(data), points
 
 def asvoid(arr):
   """View the array as dtype np.void (bytes)
@@ -41,7 +57,7 @@ def asvoid(arr):
   array([False], dtype=bool)
   """
   arr = numpy.ascontiguousarray(arr)
-  return arr.view(numpy.dtype((np.void, arr.dtype.itemsize * arr.shape[-1])))
+  return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
 
 if __name__ == '__main__':
@@ -51,5 +67,4 @@ if __name__ == '__main__':
   logger.setLevel(logging.INFO)  
   data_file = arguments['--file']
   image = Image.open(data_file, 'r').convert('RGB')
-
-  print(palette(img))
+  print(palette(image))
