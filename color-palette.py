@@ -45,46 +45,60 @@ def asvoid(arr):
   return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
 def rgb_distance_linear(c1, c2):
+  '''
+  This is a fast&dirty filter which is good for colors which are slighy off because of the problems
+  with the screenshots, or colors modified intentionally
+  '''
   return abs(c1[0]-c2[0])+abs(c1[1]-c2[1])+abs(c1[2]-c2[2])
 
 def matching_colors_linear(c1, c2, max_distance):
   return rgb_distance_linear(c1, c2) < max_distance
 
+def rgb_distance(color1, color2):
+  '''
+  This is the real thing based on http://hanzratech.in/2015/01/16/color-difference-between-2-colors-using-python.html
+  It is also slow
+  '''
+  color1_rgb = colormath.color_objects.sRGBColor(color1[0], color1[1], color1[2])
+  color2_rgb = colormath.color_objects.sRGBColor(color2[0], color2[1], color2[2])
+
+  color1_lab = colormath.color_conversions.convert_color(color1_rgb, colormath.color_objects.LabColor)
+  color2_lab = colormath.color_conversions.convert_color(color2_rgb, colormath.color_objects.LabColor)
+  delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab)
+  return delta_e
+
 def matching_colors(c1, c2, max_distance):
-  return (abs(c1[0]-c2[0]) < max_distance) and (abs(c1[1]-c2[1]) < max_distance) and (abs(c1[2]-c2[2]) < max_distance)
+  return rgb_distance_linear(c1, c2) < max_distance
 
 def find_matching_color(color, palette, max_distance):
   for c in palette.keys():
-    if color != c and matching_colors_linear(color, c, max_distance):
+    if color != c and matching_colors(color, c, max_distance):
       return True, c
   return False, None
 
 def palette(image, max_rgb_distance):
+  '''
+  Returns a 'palette': dictionary [color](occupied area)
+  '''
   palette = {}
   arr = numpy.asarray(image)
   data = asvoid(arr).ravel()
   for point in data:    
     point_color = struct.unpack("BBB", point)
-    #point_color_rgb = colormath.color_objects.sRGBColor(point_color[0], point_color[1], point_color[2])
-    if point_color in palette.keys():
-      palette[point_color] += 1
-    else:
+    if point_color in palette.keys(): 
+      # I have seen this exact color before. I expect this condition to hit often
+      palette[point_color] += 1       
+    else:                             
       is_match, matching_color = find_matching_color(point_color, palette, max_rgb_distance)
       if is_match:
+        # There is a reasonable match in the collected so far palette
         palette[matching_color] += 1
       else:
+        # Something I did not see before
         palette[point_color] = 1
 
   return len(data), palette
 
-def rgb_distance(color1, color2):
-  color1_rgb = colormath.color_objects.sRGBColor(color1[0], color1[1], color1[2])
-  color2_rgb = colormath.color_objects.sRGBColor(color2[0], color2[1], color2[2])
-
-  color1_lab = colormath.color_conversions.convert_color(color1_rgb, colormath.color_objects.LabColor);
-  color2_lab = colormath.color_conversions.convert_color(color2_rgb, colormath.color_objects.LabColor);
-  delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
-  return delta_e
 
 def normalize_color_palette(image_size, color_palette):
   '''
@@ -110,6 +124,9 @@ def print_color_palette(color_palette):
      print("{0} {1:1.4f}".format(color, color_palette[color]))
 
 def palette_distance(color_palette1, color_palette2):
+  '''
+  Compare two palettes
+  '''
   color_palette_sorted1 = sorted(color_palette1.keys())
   color_palette_sorted2 = sorted(color_palette2.keys())
   palette_size = min(len(color_palette1), len(color_palette2))
@@ -117,7 +134,7 @@ def palette_distance(color_palette1, color_palette2):
   for idx in range(palette_size):
     c1 = color_palette_sorted1[idx]
     c2 = color_palette_sorted2[idx]
-    distance += rgb_distance_linear(c1, c2)
+    distance += rgb_distance(c1, c2)
     distance += abs(color_palette1[c1]-color_palette2[c2])
   distance = (distance/palette_size)
   return distance
