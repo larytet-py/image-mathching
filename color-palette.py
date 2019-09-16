@@ -74,4 +74,4 @@ if __name__ == '__main__':
     color_palette[color] = (1.0*color_palette[color])/image_size
 
   for color in sorted (color_palette.keys()):
-     print("{0:6X} {1:0.3f}".format(color, color_palette[color]))
+     print("{0:6X} {1:1.5f}".format(color, color_palette[color]))
