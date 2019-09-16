@@ -17,6 +17,7 @@ Options:
   -s --size=<NUMBER>      Number of colors in palette
 '''
 
+import sys
 import numpy
 from PIL import Image
 from docopt import docopt
@@ -60,11 +61,11 @@ def palette(img):
   data = asvoid(arr).ravel()
   for point in data:    
     point_color = struct.unpack("BBB", point)
-    point_color_rgb = colormath.color_objects.sRGBColor(point_color[0], point_color[1], point_color[2])
-    if point_color_rgb in points.keys():
-      points[point_color_rgb] += 1
+    #point_color_rgb = colormath.color_objects.sRGBColor(point_color[0], point_color[1], point_color[2])
+    if point_color in points.keys():
+      points[point_color] += 1
     else:
-      points[point_color_rgb] = 1
+      points[point_color] = 1
 
   return len(data), points
 
@@ -75,13 +76,20 @@ def rgb_distance(color1_rgb, color2_rgb):
   return delta_e
 
 def normalize_color_palette(image_size, color_palette, palette_size):
-  Color = namedtuple('Color', ['color', 'count', 'distance'])
+  '''
+  Color = namedtuple('Color', ['count', 'distance', 'match'])
   for color1 in color_palette.keys():
+    color_distance_min = sys.maxsize
+    color_match = None
     for color2 in color_palette.keys():
       if color1 == color2:
         continue
       color_distance = rgb_distance(color1, color2)
-      print(color_distance)
+      if color_distance_min < color_distance:
+        color_distance_min, color_match = color_distance, color2
+
+    color_palette[color1] = Color(color_palette[color1], color_distance_min, color_match)
+  '''
 
   for color in color_palette.keys():
     color_palette[color] = (1.0*color_palette[color])/image_size
