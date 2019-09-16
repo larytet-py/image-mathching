@@ -44,12 +44,18 @@ def asvoid(arr):
   arr = numpy.ascontiguousarray(arr)
   return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
+def rgb_distance_linear(c1, c2):
+  return abs(c1[0]-c2[0])+abs(c1[1]-c2[1])+abs(c1[2]-c2[2])
+
+def matching_colors_linear(c1, c2, max_distance):
+  return rgb_distance_linear(c1, c2) < max_distance
+
 def matching_colors(c1, c2, max_distance):
   return (abs(c1[0]-c2[0]) < max_distance) and (abs(c1[1]-c2[1]) < max_distance) and (abs(c1[2]-c2[2]) < max_distance)
 
 def find_matching_color(color, palette, max_distance):
   for c in palette.keys():
-    if color != c and matching_colors(color, c, max_distance):
+    if color != c and matching_colors_linear(color, c, max_distance):
       return True, c
   return False, None
 
@@ -79,9 +85,6 @@ def rgb_distance(color1, color2):
   color2_lab = colormath.color_conversions.convert_color(color2_rgb, colormath.color_objects.LabColor);
   delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
   return delta_e
-
-def rgb_distance_linear(c1, c2):
-  return abs(c1[0]-c2[0])+abs(c1[1]-c2[1])+abs(c1[2]-c2[2])
 
 def normalize_color_palette(image_size, color_palette):
   '''
