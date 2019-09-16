@@ -66,5 +66,12 @@ if __name__ == '__main__':
   logger = logging.getLogger('hamming')
   logger.setLevel(logging.INFO)  
   data_file = arguments['--file']
+  
   image = Image.open(data_file, 'r').convert('RGB')
-  print(palette(image))
+  image_size, color_palette = palette(image)
+
+  for color in color_palette.keys():
+    color_palette[color] = (1.0*color_palette[color])/image_size
+
+  for color in sorted (color_palette.keys()):
+     print(color, color_palette[color])
