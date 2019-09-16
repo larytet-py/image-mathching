@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
   distance = palette_distance(color_palette, color_palette_compare)
   if distance == 0:
-    print("{0}, {1} perfect macth".format(image_file, compare_file))
+    print("{0}, {1} perfect match".format(image_file, compare_file))
   else:
     print("{0}, {1} Distance {2:08.0f}".format(image_file, compare_file, distance))
 
