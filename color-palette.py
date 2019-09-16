@@ -82,7 +82,7 @@ if __name__ == '__main__':
   image = Image.open(image_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
   normalize_color_palette(image_size, color_palette)
-  
+
   compare_file = arguments['--compare']
   if compare_file is None:
     print_color_palette(color_palette)
@@ -102,6 +102,9 @@ if __name__ == '__main__':
     distance += (c1-c2)**2
     distance += (color_palette[c1]-color_palette_compare[c2])**2
 
-  print("Distance {0}".format(distance))
+  if distance == 0:
+    print("Perfect macth")
+  else:
+    print("Distance {0}".format(distance))
 
 
