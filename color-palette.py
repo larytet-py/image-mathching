@@ -7,14 +7,14 @@ Usage:
   color-palette.py -f <FILENAME>
   color-palette.py -f <FILENAME> -c <FILENAME>
 Example:
-    color-palette.py -f favicon.bmp [--size=<NUMBER>]
-    color-palette.py -f favicon.bmp -c favicon1.bmp [--size=<NUMBER>]
+    color-palette.py -f favicon.bmp [--distance=<NUMBER>]
+    color-palette.py -f favicon.bmp -c favicon1.bmp [--distance=<NUMBER>]
    
 Options:
   -h --help               Show this screen.
   -f --file=<FILENAME>    Image to process
   -c --compare=<FILENAME> Image to compare
-  -s --size=<NUMBER>      Number of colors in palette
+  -d --distance=<NUMBER>  Maximum RGB distance between matching colors
 '''
 
 import sys
@@ -44,30 +44,32 @@ def asvoid(arr):
   arr = numpy.ascontiguousarray(arr)
   return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
-def palette(img):
-  """
-  Return palette in descending order of frequency
-  """
-  '''
-  arr = numpy.asarray(img)
-  palette, index = numpy.unique(asvoid(arr).ravel(), return_inverse=True)
-  palette = palette.view(arr.dtype).reshape(-1, arr.shape[-1])
-  count = numpy.bincount(index)
-  order = numpy.argsort(count)
-  return palette[order[::-1]]
-  '''
-  points = {}
-  arr = numpy.asarray(img)
+def matching_colors(c1, c2, max_distance):
+  return (abs(c1[0]-c2[0]) < max_distance) and (abs(c1[1]-c2[1]) < max_distance) and (abs(c1[2]-c2[2]) < max_distance)
+
+def find_matching_color(color, palette, max_distance):
+  for c in palette.keys():
+    if color != c and matching_colors(color, c, max_distance):
+      return True, c
+  return False, None
+
+def palette(image, max_rgb_distance):
+  palette = {}
+  arr = numpy.asarray(image)
   data = asvoid(arr).ravel()
   for point in data:    
     point_color = struct.unpack("BBB", point)
     #point_color_rgb = colormath.color_objects.sRGBColor(point_color[0], point_color[1], point_color[2])
-    if point_color in points.keys():
-      points[point_color] += 1
+    if point_color in palette.keys():
+      palette[point_color] += 1
     else:
-      points[point_color] = 1
+      is_match, matching_color = find_matching_color(point_color, palette, max_rgb_distance)
+      if is_match:
+        palette[matching_color] += 1
+      else:
+        palette[point_color] = 1
 
-  return len(data), points
+  return len(data), palette
 
 def rgb_distance(color1_rgb, color2_rgb):
   color1_lab = colormath.color_conversions.convert_color(color1_rgb, colormath.color_objects.LabColor);
@@ -75,7 +77,7 @@ def rgb_distance(color1_rgb, color2_rgb):
   delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
   return delta_e
 
-def normalize_color_palette(image_size, color_palette, palette_size):
+def normalize_color_palette(image_size, color_palette):
   '''
   Color = namedtuple('Color', ['count', 'distance', 'match'])
   for color1 in color_palette.keys():
@@ -118,14 +120,14 @@ if __name__ == '__main__':
   logger.setLevel(logging.INFO)  
   image_file = arguments['--file']
 
-  image = Image.open(image_file, 'r').convert('RGB')
-  image_size, color_palette = palette(image)
+  rgb_distance_str = arguments['--distance']
+  if rgb_distance_str is None:
+    rgb_distance_str = "20"
+  rgb_distance =  int(rgb_distance_str, 10)
 
-  palette_size_str = arguments['--size']
-  if palette_size_str is None:
-    palette_size_str = "20"
-  palette_size =  int(palette_size_str, 10)
-  normalize_color_palette(image_size, color_palette, palette_size)
+  image = Image.open(image_file, 'r').convert('RGB')
+  image_size, color_palette = palette(image, rgb_distance)
+  normalize_color_palette(image_size, color_palette)
 
   compare_file = arguments['--compare']
   if compare_file is None:
@@ -134,7 +136,7 @@ if __name__ == '__main__':
     exit(0)
 
   image = Image.open(compare_file, 'r').convert('RGB')
-  image_size, color_palette_compare = palette(image)
+  image_size, color_palette_compare = palette(image, rgb_distance)
   normalize_color_palette(image_size, color_palette_compare)
 
   distance = palette_distance(color_palette, color_palette_compare)
