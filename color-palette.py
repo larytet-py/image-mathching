@@ -108,7 +108,9 @@ def palette_distance(color_palette1, color_palette2):
   for idx in range(palette_size):
     c1 = color_palette_sorted1[idx]
     c2 = color_palette_sorted2[idx]
-    distance += (c1-c2)**2
+    distance += (c1[0]-c2[0])**2
+    distance += (c1[1]-c2[1])**2
+    distance += (c1[2]-c2[2])**2
     distance += (color_palette1[c1]-color_palette2[c2])**2
   distance = math.sqrt(distance/palette_size)
   return distance
