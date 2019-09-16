@@ -1,4 +1,5 @@
 Image
+Pillow
 docopt
 numpy
 

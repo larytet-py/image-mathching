@@ -16,7 +16,7 @@ Options:
 # Based on https://stackoverflow.com/questions/18801218/build-a-color-palette-from-image-url
 
 import numpy
-import Image
+from PIL import Image
 from docopt import docopt
 import logging
 
