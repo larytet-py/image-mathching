@@ -88,5 +88,7 @@ if __name__ == '__main__':
   if compare_file is None:
     exit(0)
   image = Image.open(compare_file, 'r').convert('RGB')
-  image_size, color_palette = palette(image)
+  image_size, color_palette_compare = palette(image)
+  normalize_color_palette(image_size, color_palette_compare)
+  print_color_palette(color_palette_compare)
 
