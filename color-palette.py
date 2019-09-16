@@ -72,6 +72,18 @@ def print_color_palette(color_palette):
   for color in sorted(color_palette.keys()):
      print("{0:6X} {1:1.4f}".format(color, color_palette[color]))
 
+def palette_distance(color_palette1, color_palette2):
+  color_palette_sorted1 = sorted(color_palette1.keys())
+  color_palette_sorted2 = sorted(color_palette2.keys())
+  palette_size = min(len(color_palette1), len(color_palette2))
+  distance = 0
+  for idx in range(palette_size):
+    c1 = color_palette_sorted1[idx]
+    c2 = color_palette_sorted2[idx]
+    distance += (c1-c2)**2
+    distance += (color_palette1[c1]-color_palette2[c2])**2
+  return distance
+
 if __name__ == '__main__':
   arguments = docopt(__doc__, version='0.1')
   logging.basicConfig()    
@@ -92,16 +104,7 @@ if __name__ == '__main__':
   image_size, color_palette_compare = palette(image)
   normalize_color_palette(image_size, color_palette_compare)
 
-  color_palette_sorted = sorted(color_palette.keys())
-  color_palette_compare_sorted = sorted(color_palette_compare.keys())
-  palette_size = min(len(color_palette_sorted), len(color_palette_compare_sorted))
-  distance = 0
-  for idx in range(palette_size):
-    c1 = color_palette_sorted[idx]
-    c2 = color_palette_compare_sorted[idx]
-    distance += (c1-c2)**2
-    distance += (color_palette[c1]-color_palette_compare[c2])**2
-
+  distance = palette_distance(color_palette, color_palette_compare)
   if distance == 0:
     print("Perfect macth")
   else:
