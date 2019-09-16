@@ -20,6 +20,8 @@ Options:
 import numpy
 from PIL import Image
 from docopt import docopt
+from collections import namedtuple
+
 import logging
 import struct
 import math
@@ -58,20 +60,28 @@ def palette(img):
   data = asvoid(arr).ravel()
   for point in data:    
     point_color = struct.unpack("BBB", point)
-    if point_color in points.keys():
-      points[point_color] += 1
+    point_color_rgb = colormath.color_objects.sRGBColor(point_color[0], point_color[1], point_color[2])
+    if point_color_rgb in points.keys():
+      points[point_color_rgb] += 1
     else:
-      points[point_color] = 1
+      points[point_color_rgb] = 1
 
   return len(data), points
 
 def rgb_distance(color1_rgb, color2_rgb):
-  color1_lab = colormath.color_conversions.convert_color(color1_rgb, LabColor);
-  color2_lab = colormath.color_conversions.convert_color(color2_rgb, LabColor);
+  color1_lab = colormath.color_conversions.convert_color(color1_rgb, colormath.color_objects.LabColor);
+  color2_lab = colormath.color_conversions.convert_color(color2_rgb, colormath.color_objects.LabColor);
   delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
   return delta_e
 
-def normalize_color_palette(image_size, color_palettem):
+def normalize_color_palette(image_size, color_palette, palette_size):
+  Color = namedtuple('Color', ['color', 'count', 'distance'])
+  for color1 in color_palette.keys():
+    for color2 in color_palette.keys():
+      if color1 == color2:
+        continue
+      color_distance = rgb_distance(color1, color2)
+      print(color_distance)
 
   for color in color_palette.keys():
     color_palette[color] = (1.0*color_palette[color])/image_size
@@ -102,7 +112,12 @@ if __name__ == '__main__':
 
   image = Image.open(image_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
-  normalize_color_palette(image_size, color_palette)
+
+  palette_size_str = arguments['--size']
+  if palette_size_str is None:
+    palette_size_str = "20"
+  palette_size =  int(palette_size_str, 10)
+  normalize_color_palette(image_size, color_palette, palette_size)
 
   compare_file = arguments['--compare']
   if compare_file is None:
