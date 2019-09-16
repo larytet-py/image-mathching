@@ -24,6 +24,10 @@ import logging
 import struct
 import math
 
+import colormath.color_objects 
+import colormath.color_conversions 
+import colormath.color_diff 
+
 
 def asvoid(arr):
   """View the array as dtype np.void (bytes)
@@ -52,8 +56,8 @@ def palette(img):
   points = {}
   arr = numpy.asarray(img)
   data = asvoid(arr).ravel()
-  for point in data:
-    point_color = (point[0], point[1], point[2])
+  for point in data:    
+    point_color = struct.unpack("BBB", point)
     if point_color in points.keys():
       points[point_color] += 1
     else:
@@ -61,26 +65,20 @@ def palette(img):
 
   return len(data), points
 
-import colormath.color_objects 
-import colormath.color_conversions 
-import colormath.color_diff 
-
 def rgb_distance(color1_rgb, color2_rgb):
   color1_lab = colormath.color_conversions.convert_color(color1_rgb, LabColor);
   color2_lab = colormath.color_conversions.convert_color(color2_rgb, LabColor);
   delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
   return delta_e
 
-print "The difference between the 2 color = ", delta_e
-
-def normalize_color_palette(image_size, color_palettem, palette_size):
+def normalize_color_palette(image_size, color_palettem):
 
   for color in color_palette.keys():
     color_palette[color] = (1.0*color_palette[color])/image_size
 
 def print_color_palette(color_palette):
   for color in sorted(color_palette.keys()):
-     print("{0:6X} {1:1.4f}".format(color, color_palette[color]))
+     print("{0} {1:1.4f}".format(color, color_palette[color]))
 
 def palette_distance(color_palette1, color_palette2):
   color_palette_sorted1 = sorted(color_palette1.keys())
