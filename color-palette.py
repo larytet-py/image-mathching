@@ -23,6 +23,7 @@ from PIL import Image
 from docopt import docopt
 import logging
 import struct
+import math
 
 def palette(img):
   """
@@ -82,6 +83,7 @@ def palette_distance(color_palette1, color_palette2):
     c2 = color_palette_sorted2[idx]
     distance += (c1-c2)**2
     distance += (color_palette1[c1]-color_palette2[c2])**2
+  distance = math.sqrt(distance/palette_size)
   return distance
 
 if __name__ == '__main__':
@@ -97,6 +99,7 @@ if __name__ == '__main__':
 
   compare_file = arguments['--compare']
   if compare_file is None:
+    print(image_file)
     print_color_palette(color_palette)
     exit(0)
 
@@ -106,8 +109,8 @@ if __name__ == '__main__':
 
   distance = palette_distance(color_palette, color_palette_compare)
   if distance == 0:
-    print("Perfect macth")
+    print("{0}, {1} perfect macth".format(image_file, compare_file))
   else:
-    print("Distance {0}".format(distance))
+    print("{0}, {1} Distance {2}".format(image_file, compare_file, distance))
 
 
