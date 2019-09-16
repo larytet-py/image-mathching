@@ -82,11 +82,12 @@ if __name__ == '__main__':
   image = Image.open(image_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
   normalize_color_palette(image_size, color_palette)
-  print_color_palette(color_palette)
-
+  
   compare_file = arguments['--compare']
   if compare_file is None:
+    print_color_palette(color_palette)
     exit(0)
+
   image = Image.open(compare_file, 'r').convert('RGB')
   image_size, color_palette_compare = palette(image)
   normalize_color_palette(image_size, color_palette_compare)
