@@ -5,12 +5,15 @@ Returs color palette of the image
 Usage:
   color-palette.py -h | --help
   color-palette.py -f <FILENAME>
+  color-palette.py -f <FILENAME> -c <FILENAME>
 Example:
     color-palette.py -f favicon.bmp
+    color-palette.py -f favicon.bmp -c favicon1.bmp
    
 Options:
-  -h --help                 Show this screen.
-  -f --file=<FILENAME>    Data set
+  -h --help               Show this screen.
+  -f --file=<FILENAME>    Image to process
+  -c --compare=<FILENAME> Image to compare
 '''
 
 # Based on https://stackoverflow.com/questions/18801218/build-a-color-palette-from-image-url
@@ -46,7 +49,7 @@ def palette(img):
       points[point_color] += 1
     else:
       points[point_color] = 1
-      
+
   return len(data), points
 
 def asvoid(arr):
@@ -61,6 +64,12 @@ def asvoid(arr):
   arr = numpy.ascontiguousarray(arr)
   return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
+def print_color_palette(color_palette):
+  for color in color_palette.keys():
+    color_palette[color] = (1.0*color_palette[color])/image_size
+
+  for color in sorted (color_palette.keys()):
+     print("{0:6X} {1:1.4f}".format(color, color_palette[color]))
 
 if __name__ == '__main__':
   arguments = docopt(__doc__, version='0.1')
@@ -71,9 +80,5 @@ if __name__ == '__main__':
 
   image = Image.open(data_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
+  print_color_palette(color_palette)
 
-  for color in color_palette.keys():
-    color_palette[color] = (1.0*color_palette[color])/image_size
-
-  for color in sorted (color_palette.keys()):
-     print("{0:6X} {1:1.4f}".format(color, color_palette[color]))
