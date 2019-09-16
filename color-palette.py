@@ -71,11 +71,17 @@ def palette(image, max_rgb_distance):
 
   return len(data), palette
 
-def rgb_distance(color1_rgb, color2_rgb):
+def rgb_distance(color1, color2):
+  color1_rgb = colormath.color_objects.sRGBColor(color1[0], color1[1], color1[2])
+  color2_rgb = colormath.color_objects.sRGBColor(color2[0], color2[1], color2[2])
+
   color1_lab = colormath.color_conversions.convert_color(color1_rgb, colormath.color_objects.LabColor);
   color2_lab = colormath.color_conversions.convert_color(color2_rgb, colormath.color_objects.LabColor);
   delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
   return delta_e
+
+def rgb_distance_linear(c1, c2):
+  return abs(c1[0]-c2[0])+abs(c1[1]-c2[1])+abs(c1[2]-c2[2])
 
 def normalize_color_palette(image_size, color_palette):
   '''
@@ -108,11 +114,9 @@ def palette_distance(color_palette1, color_palette2):
   for idx in range(palette_size):
     c1 = color_palette_sorted1[idx]
     c2 = color_palette_sorted2[idx]
-    distance += (c1[0]-c2[0])**2
-    distance += (c1[1]-c2[1])**2
-    distance += (c1[2]-c2[2])**2
-    distance += (color_palette1[c1]-color_palette2[c2])**2
-  distance = math.sqrt(distance/palette_size)
+    distance += rgb_distance_linear(c1, c2)
+    distance += abs(color_palette1[c1]-color_palette2[c2])
+  distance = (distance/palette_size)
   return distance
 
 if __name__ == '__main__':
@@ -125,10 +129,10 @@ if __name__ == '__main__':
   rgb_distance_str = arguments['--distance']
   if rgb_distance_str is None:
     rgb_distance_str = "20"
-  rgb_distance =  int(rgb_distance_str, 10)
+  rgb_max_distance =  int(rgb_distance_str, 10)
 
   image = Image.open(image_file, 'r').convert('RGB')
-  image_size, color_palette = palette(image, rgb_distance)
+  image_size, color_palette = palette(image, rgb_max_distance)
   normalize_color_palette(image_size, color_palette)
 
   compare_file = arguments['--compare']
@@ -138,7 +142,7 @@ if __name__ == '__main__':
     exit(0)
 
   image = Image.open(compare_file, 'r').convert('RGB')
-  image_size, color_palette_compare = palette(image, rgb_distance)
+  image_size, color_palette_compare = palette(image, rgb_max_distance)
   normalize_color_palette(image_size, color_palette_compare)
 
   distance = palette_distance(color_palette, color_palette_compare)
