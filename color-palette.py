@@ -111,6 +111,6 @@ if __name__ == '__main__':
   if distance == 0:
     print("{0}, {1} perfect macth".format(image_file, compare_file))
   else:
-    print("{0}, {1} Distance {2}".format(image_file, compare_file, distance))
+    print("{0}, {1} Distance {2:08.0f}".format(image_file, compare_file, distance))
 
 
