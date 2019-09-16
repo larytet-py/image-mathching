@@ -82,3 +82,7 @@ if __name__ == '__main__':
   image_size, color_palette = palette(image)
   print_color_palette(color_palette)
 
+  compare_file = arguments['--compare']
+  if compare_file is "":
+    exit(0)
+
