@@ -7,13 +7,14 @@ Usage:
   color-palette.py -f <FILENAME>
   color-palette.py -f <FILENAME> -c <FILENAME>
 Example:
-    color-palette.py -f favicon.bmp
-    color-palette.py -f favicon.bmp -c favicon1.bmp
+    color-palette.py -f favicon.bmp [--size=<NUMBER>]
+    color-palette.py -f favicon.bmp -c favicon1.bmp [--size=<NUMBER>]
    
 Options:
   -h --help               Show this screen.
   -f --file=<FILENAME>    Image to process
   -c --compare=<FILENAME> Image to compare
+  -s --size=<NUMBER>      Number of colors in palette
 '''
 
 import numpy
