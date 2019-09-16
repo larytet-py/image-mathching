@@ -39,11 +39,11 @@ def palette(img):
   for point in data:
     while len(point) < 4:
       point = b'\x00' + point
-    point_color = struct.unpack(">L", point)
+    point_color = struct.unpack(">L", point)[0]
     if point in points.keys():
-      points[point] += 1
+      points[point_color] += 1
     else:
-      points[point] = 1
+      points[point_color] = 1
 
   return len(data), points
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
   logger = logging.getLogger('hamming')
   logger.setLevel(logging.INFO)  
   data_file = arguments['--file']
-  
+
   image = Image.open(data_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
 
@@ -74,4 +74,4 @@ if __name__ == '__main__':
     color_palette[color] = (1.0*color_palette[color])/image_size
 
   for color in sorted (color_palette.keys()):
-     print(color, color_palette[color])
+     print("{0:6X} {1:0.3f}".format(color, color_palette[color]))
