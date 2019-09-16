@@ -24,6 +24,19 @@ import logging
 import struct
 import math
 
+
+def asvoid(arr):
+  """View the array as dtype np.void (bytes)
+  This collapses ND-arrays to 1D-arrays, so you can perform 1D operations on them.
+  http://stackoverflow.com/a/16216866/190597 (Jaime)
+  http://stackoverflow.com/a/16840350/190597 (Jaime)
+  Warning:
+  >>> asvoid([-0.]) == asvoid([0.])
+  array([False], dtype=bool)
+  """
+  arr = numpy.ascontiguousarray(arr)
+  return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
+
 def palette(img):
   """
   Return palette in descending order of frequency
@@ -40,11 +53,7 @@ def palette(img):
   arr = numpy.asarray(img)
   data = asvoid(arr).ravel()
   for point in data:
-
-    while len(point) < 4:
-      point = b'\x00' + point
-    point_color = struct.unpack(">L", point)[0]
-
+    point_color = (point[0], point[1], point[2])
     if point_color in points.keys():
       points[point_color] += 1
     else:
@@ -52,19 +61,20 @@ def palette(img):
 
   return len(data), points
 
-def asvoid(arr):
-  """View the array as dtype np.void (bytes)
-  This collapses ND-arrays to 1D-arrays, so you can perform 1D operations on them.
-  http://stackoverflow.com/a/16216866/190597 (Jaime)
-  http://stackoverflow.com/a/16840350/190597 (Jaime)
-  Warning:
-  >>> asvoid([-0.]) == asvoid([0.])
-  array([False], dtype=bool)
-  """
-  arr = numpy.ascontiguousarray(arr)
-  return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
+import colormath.color_objects 
+import colormath.color_conversions 
+import colormath.color_diff 
 
-def normalize_color_palette(image_size, color_palette):
+def rgb_distance(color1_rgb, color2_rgb):
+  color1_lab = colormath.color_conversions.convert_color(color1_rgb, LabColor);
+  color2_lab = colormath.color_conversions.convert_color(color2_rgb, LabColor);
+  delta_e = colormath.color_diff.delta_e_cie2000(color1_lab, color2_lab);
+  return delta_e
+
+print "The difference between the 2 color = ", delta_e
+
+def normalize_color_palette(image_size, color_palettem, palette_size):
+
   for color in color_palette.keys():
     color_palette[color] = (1.0*color_palette[color])/image_size
 
