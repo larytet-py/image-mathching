@@ -64,10 +64,11 @@ def asvoid(arr):
   arr = numpy.ascontiguousarray(arr)
   return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
-def print_color_palette(color_palette):
+def normalize_color_palette(image_size, color_palette):
   for color in color_palette.keys():
     color_palette[color] = (1.0*color_palette[color])/image_size
 
+def print_color_palette(color_palette):
   for color in sorted (color_palette.keys()):
      print("{0:6X} {1:1.4f}".format(color, color_palette[color]))
 
@@ -80,6 +81,7 @@ if __name__ == '__main__':
 
   image = Image.open(image_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
+  normalize_color_palette(image_size, color_palette)
   print_color_palette(color_palette)
 
   compare_file = arguments['--compare']
