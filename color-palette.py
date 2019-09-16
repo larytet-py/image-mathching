@@ -22,6 +22,7 @@ import numpy
 from PIL import Image
 from docopt import docopt
 from collections import namedtuple
+import operator 
 
 import logging
 import struct
@@ -120,22 +121,31 @@ def normalize_color_palette(image_size, color_palette):
     color_palette[color] = (1.0*color_palette[color])/image_size
 
 def print_color_palette(color_palette):
-  for color in sorted(color_palette.keys()):
-     print("{0} {1:1.4f}".format(color, color_palette[color]))
+  color_palette_sorted = sorted(color_palette.items(), key=operator.itemgetter(1), reverse=True)
+  for color, ratio in color_palette_sorted:
+     print("{0} {1:.4f}".format(color, 100*ratio))
 
 def palette_distance(color_palette1, color_palette2):
   '''
   Compare two palettes
+  Order the palette by color (works better than ordering by area)
+  Summ distances between palettes
   '''
+  #color_palette_sorted1 = sorted(color_palette1.items(), key=operator.itemgetter(1), reverse=True)
+  #color_palette_sorted2 = sorted(color_palette2.items(), key=operator.itemgetter(1), reverse=True)
+
   color_palette_sorted1 = sorted(color_palette1.keys())
   color_palette_sorted2 = sorted(color_palette2.keys())
+
   palette_size = min(len(color_palette1), len(color_palette2))
   distance = 0
   for idx in range(palette_size):
-    c1 = color_palette_sorted1[idx]
-    c2 = color_palette_sorted2[idx]
-    distance += rgb_distance(c1, c2)
-    distance += abs(color_palette1[c1]-color_palette2[c2])
+    c1 = (color_palette_sorted1[idx])
+    c2 = (color_palette_sorted2[idx])
+    distance += rgb_distance_linear(c1, c2)
+    # size of the area occupied by the color impacts the distance
+    # how can I add "area percentage distance" and "RGB distance"?
+    # distance += 100*area_weighting*abs(color_palette1[c1]-color_palette2[c2]) 
   distance = (distance/palette_size)
   return distance
 
