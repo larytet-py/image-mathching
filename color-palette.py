@@ -76,13 +76,15 @@ if __name__ == '__main__':
   logging.basicConfig()    
   logger = logging.getLogger('hamming')
   logger.setLevel(logging.INFO)  
-  data_file = arguments['--file']
+  image_file = arguments['--file']
 
-  image = Image.open(data_file, 'r').convert('RGB')
+  image = Image.open(image_file, 'r').convert('RGB')
   image_size, color_palette = palette(image)
   print_color_palette(color_palette)
 
   compare_file = arguments['--compare']
   if compare_file is "":
     exit(0)
+  image = Image.open(compare_file, 'r').convert('RGB')
+  image_size, color_palette = palette(image)
 
