@@ -69,7 +69,7 @@ def normalize_color_palette(image_size, color_palette):
     color_palette[color] = (1.0*color_palette[color])/image_size
 
 def print_color_palette(color_palette):
-  for color in sorted (color_palette.keys()):
+  for color in sorted(color_palette.keys()):
      print("{0:6X} {1:1.4f}".format(color, color_palette[color]))
 
 if __name__ == '__main__':
@@ -90,5 +90,17 @@ if __name__ == '__main__':
   image = Image.open(compare_file, 'r').convert('RGB')
   image_size, color_palette_compare = palette(image)
   normalize_color_palette(image_size, color_palette_compare)
-  print_color_palette(color_palette_compare)
+
+  color_palette_sorted = sorted(color_palette.keys())
+  color_palette_compare_sorted = sorted(color_palette_compare.keys())
+  palette_size = min(len(color_palette_sorted), len(color_palette_compare_sorted))
+  distance = 0
+  for idx in range(palette_size):
+    c1 = color_palette_sorted[idx]
+    c2 = color_palette_compare_sorted[idx]
+    distance += (c1-c2)**2
+    distance += (color_palette[c1]-color_palette_compare[c2])**2
+
+  print("Distance {0}".format(distance))
+
 
