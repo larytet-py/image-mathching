@@ -221,7 +221,7 @@ if __name__ == '__main__':
     image = Image.open(image_file, 'r').convert('RGB')
     image_size, color_palette = palette(image, rgb_max_distance)
     normalize_color_palette(image_size, color_palette)
-    update_cache(cache_filename, image_file, color_palette)
+    update_cache(cache_filename, image_file, color_palette, rgb_max_distance)
 
   compare_file = arguments['--compare']
   if compare_file is None:
