@@ -178,10 +178,10 @@ def update_cache(cache_filename, filename, palette, max_distance):
 
 
 def load_from_cache(cache_filename, image_file, max_distance):
-  file_md5 = md5sum(filename)
   with open('/tmp/file.yaml', 'r', newline='') as f:
     cache_data = yaml.load(f)
   
+  file_md5 = md5sum(image_file)
   key = max_distance + file_md5
   if key in cache_data:
     logger.info("File {0} is in cache".format(filename))
