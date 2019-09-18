@@ -7,14 +7,15 @@ Usage:
   color-palette.py -f <FILENAME>
   color-palette.py -f <FILENAME> -c <FILENAME>
 Example:
-    color-palette.py -f favicon.bmp [--distance=<NUMBER>]
-    color-palette.py -f favicon.bmp -c favicon1.bmp [--distance=<NUMBER>]
+    color-palette.py -f favicon.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
+    color-palette.py -f favicon.bmp -c favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
    
 Options:
   -h --help               Show this screen.
   -f --file=<FILENAME>    Image to process
   -c --compare=<FILENAME> Image to compare
   -d --distance=<NUMBER>  Maximum RGB distance between matching colors
+  -e --cache=<FILENAME>   Cache filename to use
 '''
 
 import sys
@@ -32,6 +33,15 @@ import colormath.color_objects
 import colormath.color_conversions 
 import colormath.color_diff 
 
+import yaml
+import hashlib
+
+def md5sum(filename, blocksize=65536):
+    hash = hashlib.md5()
+    with open(filename, "rb") as f:
+        for block in iter(lambda: f.read(blocksize), b""):
+            hash.update(block)
+    return hash.hexdigest()
 
 def asvoid(arr):
   """View the array as dtype np.void (bytes)
@@ -149,6 +159,38 @@ def palette_distance(color_palette1, color_palette2):
   distance = (distance/palette_size)
   return distance
 
+
+PaletteCached = namedtuple('PaletteCached', ['filename', 'distance', 'palette'])
+
+def update_cache(cache_filename, filename, palette, max_distance):
+  file_md5 = md5sum(filename)
+  with open('/tmp/file.yaml', 'r', newline='') as f:
+    cache_data = yaml.load(f)
+  
+  key = max_distance + file_md5
+  if key in cache_data:
+    logger.info("File {0} MD5 {1} is in cache".format(filename, file_md5))
+    return
+
+  cache_data[key] = PaletteCached(filename, max_distance, palette)
+  with open('/tmp/file.yaml', 'r', newline='') as f:
+    f.write(yaml.dump(cache_data))
+
+
+def load_from_cache(cache_filename, image_file, max_distance):
+  file_md5 = md5sum(filename)
+  with open('/tmp/file.yaml', 'r', newline='') as f:
+    cache_data = yaml.load(f)
+  
+  key = max_distance + file_md5
+  if key in cache_data:
+    logger.info("File {0} is in cache".format(filename))
+    paletteCached = cache_data[key]
+    return True, paletteCached.palette
+  
+  return False, None
+    
+
 if __name__ == '__main__':
   arguments = docopt(__doc__, version='0.1')
   logging.basicConfig()    
@@ -156,14 +198,21 @@ if __name__ == '__main__':
   logger.setLevel(logging.INFO)  
   image_file = arguments['--file']
 
+  cache_filename = arguments['--cache'] 
+  if cache_filename is None:
+    cache_filename = ".cache.yaml"
+
   rgb_distance_str = arguments['--distance']
   if rgb_distance_str is None:
     rgb_distance_str = "20"
   rgb_max_distance =  int(rgb_distance_str, 10)
 
-  image = Image.open(image_file, 'r').convert('RGB')
-  image_size, color_palette = palette(image, rgb_max_distance)
-  normalize_color_palette(image_size, color_palette)
+  isInCache, color_palette = load_from_cache(cache_filename, image_file, rgb_max_distance)
+  if not isInCache:
+    image = Image.open(image_file, 'r').convert('RGB')
+    image_size, color_palette = palette(image, rgb_max_distance)
+    normalize_color_palette(image_size, color_palette)
+    update_cache(cache_filename, image_file, color_palette)
 
   compare_file = arguments['--compare']
   if compare_file is None:
@@ -171,9 +220,12 @@ if __name__ == '__main__':
     print_color_palette(color_palette)
     exit(0)
 
-  image = Image.open(compare_file, 'r').convert('RGB')
-  image_size, color_palette_compare = palette(image, rgb_max_distance)
-  normalize_color_palette(image_size, color_palette_compare)
+  isInCache, color_palette_compare = load_from_cache(cache_filename, compare_file, rgb_max_distance)
+  if not isInCache:
+    image = Image.open(compare_file, 'r').convert('RGB')
+    image_size, color_palette_compare = palette(image, rgb_max_distance)
+    normalize_color_palette(image_size, color_palette_compare)
+    update_cache(cache_filename, image_file, color_palette_compare)
 
   distance = palette_distance(color_palette, color_palette_compare)
   if distance == 0:
