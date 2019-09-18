@@ -193,7 +193,7 @@ def load_from_cache(cache_filename, image_file, max_distance):
   file_md5 = md5sum(image_file)
   key = cache_key(max_distance, file_md5)
   if key in cache_data:
-    logger.info("File {0} is in cache".format(filename))
+    logger.info("File {0} MD5 {1} is in cache".format(image_file, file_md5))
     paletteCached = cache_data[key]
     return True, paletteCached.palette
   
