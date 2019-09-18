@@ -19,6 +19,7 @@ Options:
 '''
 
 import sys
+import os
 import numpy
 from PIL import Image
 from docopt import docopt
@@ -178,6 +179,11 @@ def update_cache(cache_filename, filename, palette, max_distance):
 
 
 def load_from_cache(cache_filename, image_file, max_distance):
+  if not os.path.exists(cache_filename):
+    cache_data = {}
+    with open(cache_filename, 'w', newline='') as f:
+      f.write(yaml.dump(cache_data))
+
   with open(cache_filename, 'r', newline='') as f:
     cache_data = yaml.load(f)
   
