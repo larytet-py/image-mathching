@@ -173,7 +173,7 @@ def update_cache(cache_filename, filename, palette, max_distance):
   
   key = cache_key(max_distance, file_md5)
   if key in cache_data:
-    logger.info("File {0} MD5 {1} is in cache".format(filename, file_md5))
+    logger.debug("File {0} is in cache: md5 {1}".format(filename, file_md5))
     return
 
   cache_data[key] = PaletteCached(filename, max_distance, palette)
@@ -193,7 +193,7 @@ def load_from_cache(cache_filename, image_file, max_distance):
   file_md5 = md5sum(image_file)
   key = cache_key(max_distance, file_md5)
   if key in cache_data:
-    logger.info("File {0} MD5 {1} is in cache".format(image_file, file_md5))
+    logger.debug("File {0} is in cache: md5 {1}".format(image_file, file_md5))
     paletteCached = cache_data[key]
     return True, paletteCached.palette
   
@@ -234,7 +234,7 @@ if __name__ == '__main__':
     image = Image.open(compare_file, 'r').convert('RGB')
     image_size, color_palette_compare = palette(image, rgb_max_distance)
     normalize_color_palette(image_size, color_palette_compare)
-    update_cache(cache_filename, image_file, color_palette_compare)
+    update_cache(cache_filename, image_file, color_palette_compare, rgb_max_distance)
 
   distance = palette_distance(color_palette, color_palette_compare)
   if distance == 0:
