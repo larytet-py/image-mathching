@@ -163,12 +163,15 @@ def palette_distance(color_palette1, color_palette2):
 
 PaletteCached = namedtuple('PaletteCached', ['filename', 'distance', 'palette'])
 
+def cache_key(max_distance, file_md5):
+  return str(max_distance)+file_md5
+
 def update_cache(cache_filename, filename, palette, max_distance):
   file_md5 = md5sum(filename)
   with open(cache_filename, 'r', newline='') as f:
     cache_data = yaml.load(f)
   
-  key = max_distance + file_md5
+  key = cache_key(max_distance, file_md5)
   if key in cache_data:
     logger.info("File {0} MD5 {1} is in cache".format(filename, file_md5))
     return
@@ -188,7 +191,7 @@ def load_from_cache(cache_filename, image_file, max_distance):
     cache_data = yaml.load(f)
   
   file_md5 = md5sum(image_file)
-  key = max_distance + file_md5
+  key = cache_key(max_distance, file_md5)
   if key in cache_data:
     logger.info("File {0} is in cache".format(filename))
     paletteCached = cache_data[key]
