@@ -1,7 +1,8 @@
 #!/usr/bin/python 
 
 '''color-palette.py
-Returs color palette of the image
+Returns color palette of the image
+
 Usage:
   color-palette.py -h | --help
   color-palette.py -f <FILENAME>
