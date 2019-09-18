@@ -164,7 +164,7 @@ PaletteCached = namedtuple('PaletteCached', ['filename', 'distance', 'palette'])
 
 def update_cache(cache_filename, filename, palette, max_distance):
   file_md5 = md5sum(filename)
-  with open('/tmp/file.yaml', 'r', newline='') as f:
+  with open(cache_filename, 'r', newline='') as f:
     cache_data = yaml.load(f)
   
   key = max_distance + file_md5
@@ -173,12 +173,12 @@ def update_cache(cache_filename, filename, palette, max_distance):
     return
 
   cache_data[key] = PaletteCached(filename, max_distance, palette)
-  with open('/tmp/file.yaml', 'r', newline='') as f:
+  with open(cache_filename, 'w', newline='') as f:
     f.write(yaml.dump(cache_data))
 
 
 def load_from_cache(cache_filename, image_file, max_distance):
-  with open('/tmp/file.yaml', 'r', newline='') as f:
+  with open(cache_filename, 'r', newline='') as f:
     cache_data = yaml.load(f)
   
   file_md5 = md5sum(image_file)
