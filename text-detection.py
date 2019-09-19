@@ -146,7 +146,10 @@ def generate_collage(image_filename, collage_filename):
 	w = 320
 	h = 200
 	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
-	count = 0
+
+	# see https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
+	boxes = non_max_suppression(np.array(rects), probs=confidences)
+
 	for (_, startX, startY, endX, endY) in text_boxes:
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
 		rectangle = rectangle.copy()
