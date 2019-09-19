@@ -143,12 +143,12 @@ def generate_collage(image_filename, collage_filename):
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
 	rectangles = []
-	w = 160
-	h = 160
-	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
+	w = 400
+	h = 320
+	collage = 255*np.ones(shape=[w, h], dtype=np.uint8)
 	for (_, startX, startY, endX, endY) in text_boxes:
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
-		rectangle.resize(w,h)
+		rectangle = np.resize(rectangle, (w, h))
 		collage = np.vstack([collage, rectangle])
 
 	return collage
@@ -178,13 +178,12 @@ if __name__ == '__main__':
 	confidence =  float(confidence_str)
 
 	text_boxes = text_areas(image_filename, model_filename, confidence)
-	'''
 	if collage_filename is not None:
 		collage = generate_collage(image_filename, collage_filename)
 		if arguments["--show"] is not None:
 			cv2.imshow("Text Detection", collage)
 			cv2.waitKey(0)
-	'''
+
 	if arguments["--show"] is not None:
 		show_text_boxes(image_filename)
 		cv2.waitKey(0)
