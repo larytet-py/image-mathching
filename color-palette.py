@@ -8,8 +8,8 @@ Usage:
   color-palette.py --image <FILENAME>
   color-palette.py --image <FILENAME> --compare <FILENAME>
 Example:
-  color-palette.py --image favicon.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
-  color-palette.py --image favicon.bmp --compare favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
+  color-palette.py --image favicon.bmp 
+  color-palette.py --image favicon.bmp --compare favicon1.bmp
    
 Options:
   -h --help               Show this screen
