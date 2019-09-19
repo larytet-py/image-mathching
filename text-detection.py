@@ -153,7 +153,7 @@ def generate_collage(image_filename, collage_filename):
 	rectangles = non_max_suppression(np.array(rectangles), probs=confidences)
 	logger.info("After suppression remained {0} text boxes".format(len(rectangles)))
 
-	w, h = 320, 200
+	w, h = 120, 80
 	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
 	for (startX, startY, endX, endY) in rectangles:
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
