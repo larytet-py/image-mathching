@@ -6,7 +6,7 @@ Collects areas containing text, returns
 
 Usage:
   text-detection.py -h | --help
-  text-detection.py --image <FILENAME> --model <FILENAME> [--confidence <VALUE>] [--cache=<FILENAME>] [--collage=<FILENAME>]
+  text-detection.py --image <FILENAME> --model <FILENAME> [--confidence <VALUE>] [--cache=<FILENAME>] [--collage=<FILENAME>] [--show]
    
 Options:
   -h --help               Show this screen
@@ -16,6 +16,7 @@ Options:
   --confidence=<NUMBER>   Confidence level that an area contains text [default: 0.6]
   --cache=<FILENAME>      Cache filename to use [defualt: .text-detection.cache.yaml]
   --collage=<FILENAME>    Generate a collage of discovered text boxes
+  --show                  Show the image with text boxes
 '''
 
 
@@ -137,7 +138,17 @@ def text_areas(image_filename, model_filename, confidence):
 	#boxes = non_max_suppression(np.array(rects), probs=confidences)
 	return text_boxes
 
-def collage(collage_filename):
+def collage(image_filename, collage_filename):
+	# load the input image 
+	image = cv2.imread(image_filename)
+	# loop over the bounding boxes
+	for (_, startX, startY, endX, endY) in text_boxes:
+		cv2.rectangle(image, (int(startX), int(startY)), (int(endX), int(endY)), (0, 255, 0), 2)
+
+	# show the output image
+	cv2.imshow("Text Detection", image)
+
+def show_text_boxes(image_filename):
 	# load the input image 
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
@@ -162,9 +173,12 @@ if __name__ == '__main__':
 
 	text_boxes = text_areas(image_filename, model_filename, confidence)
 
-	if collage_filename is None:
-		exit(0)
+	if collage_filename is not None:
+		collage(image_filename, collage_filename)
+		
+	if arguments["--show"] is not None:
+		show_text_boxes(image_filename)
+		cv2.waitKey(0)
 
-	collage(collage_filename)
-	cv2.waitKey(0)
+
 
