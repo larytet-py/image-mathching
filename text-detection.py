@@ -11,11 +11,13 @@ Usage:
 Options:
   -h --help               Show this screen
   --image=<FILENAME>      Image to process
-  --model=<FILENAME>      EAST model [default: ./frozen_east_text_detection.pb]
+  --model=<FILENAME>      EAST model, for example https://github.com/larytet-py/image-mathching/releases/download/base-line/frozen_east_text_detection.pb 
+                          [default: ./frozen_east_text_detection.pb]
   --confidence=<NUMBER>   Confidence level that an area contains text [default: 0.6]
   --cache=<FILENAME>      Cache filename to use [defualt: .text-detection.cache.yaml]
   --collage=<FILENAME>    Generate a collage of discovered text boxes
 '''
+
 
 
 import logging
