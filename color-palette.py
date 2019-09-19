@@ -8,8 +8,8 @@ Usage:
   color-palette.py -f <FILENAME>
   color-palette.py -f <FILENAME> -c <FILENAME>
 Example:
-    color-palette.py -f favicon.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
-    color-palette.py -f favicon.bmp -c favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
+  color-palette.py -f favicon.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
+  color-palette.py -f favicon.bmp -c favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
    
 Options:
   -h --help               Show this screen.
@@ -154,10 +154,21 @@ def palette_distance(color_palette1, color_palette2):
   for idx in range(palette_size):
     c1 = (color_palette_sorted1[idx])
     c2 = (color_palette_sorted2[idx])
-    distance += rgb_distance_linear(c1, c2)
+    rgb_distance = rgb_distance_linear(c1, c2)
+
     # size of the area occupied by the color impacts the distance
-    # how can I add "area percentage distance" and "RGB distance"?
-    # distance += 100*area_weighting*abs(color_palette1[c1]-color_palette2[c2]) 
+    # Does not work ? May be will work for areas containing text?
+    '''
+    distance_occupied_area = 0
+    if color_palette1[c1] != 0:
+      distance_occupied_area = abs(color_palette1[c1]-color_palette2[c2])/color_palette1[c1]
+    elif color_palette1[c2] != 0:
+      distance_occupied_area = abs(color_palette1[c1]-color_palette2[c2])/color_palette1[c2]
+    rgb_distance = rgb_distance * (1 + distance_occupied_area)
+    '''
+
+    distance += rgb_distance
+
   distance = (distance/palette_size)
   return distance
 
