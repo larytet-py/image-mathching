@@ -143,13 +143,20 @@ def generate_collage(image_filename, collage_filename):
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
 	rectangles = []
-	w = 400
-	h = 320
-	collage = 255*np.ones(shape=[w, h], dtype=np.uint8)
+	w = 320
+	h = 200
+	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
+	count = 0
 	for (_, startX, startY, endX, endY) in text_boxes:
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
-		rectangle = np.resize(rectangle, (w, h))
+		rectangle = rectangle.copy()
+		rectangle = cv2.resize(rectangle, dsize=(h, w), interpolation=cv2.INTER_CUBIC)
+		cv2.imshow("rectangle", rectangle)
+		cv2.waitKey(0)
 		collage = np.vstack([collage, rectangle])
+		count += 1
+		if count > 10:
+			break
 
 	return collage
 
