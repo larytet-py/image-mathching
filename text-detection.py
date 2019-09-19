@@ -11,11 +11,11 @@ Example:
   text-detection.py --image images/lebron_james.jpg --east frozen_east_text_detection.pb 
    
 Options:
-  -h --help               Show this screen.
+  -h --help               Show this screen
   --image=<FILENAME>      Image to process
-  --model=<FILENAME>      EAST model, usually a '.pb' file
-  --confidence=<NUMBER>   Confidence level that the area contains text, (default 0.6)
-  --cache=<FILENAME>      Cache filename to use
+  --model=<FILENAME>      EAST model [default: ./frozen_east_text_detection.pb]
+  --confidence=<NUMBER>   Confidence level that an area contains text [default 0.6]
+  --cache=<FILENAME>      Cache filename to use [defualt: .text-detection.cache.yaml]
 '''
 
 

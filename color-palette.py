@@ -12,7 +12,7 @@ Example:
   color-palette.py --image favicon.bmp --compare favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
    
 Options:
-  -h --help               Show this screen.
+  -h --help               Show this screen
   --image=<FILENAME>      Image to process
   --compare=<FILENAME>    Image to compare
   --distance=<NUMBER>     Maximum RGB distance between matching colors [default: 20]
