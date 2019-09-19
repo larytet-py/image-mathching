@@ -12,7 +12,7 @@ Options:
   -h --help               Show this screen
   --image=<FILENAME>      Image to process
   --model=<FILENAME>      EAST model [default: ./frozen_east_text_detection.pb]
-  --confidence=<NUMBER>   Confidence level that an area contains text [default 0.6]
+  --confidence=<NUMBER>   Confidence level that an area contains text [default: 0.6]
   --cache=<FILENAME>      Cache filename to use [defualt: .text-detection.cache.yaml]
   --collage=<FILENAME>    Generate a collage of discovered text boxes
 '''
@@ -138,7 +138,7 @@ def collage(collage_filename):
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
 	for (_, startX, startY, endX, endY) in text_boxes:
-		cv2.rectangle(image, (startX, startY), (endX, endY), (0, 255, 0), 2)
+		cv2.rectangle(image, (int(startX), int(startY)), (int(endX), int(endY)), (0, 255, 0), 2)
 
 	# show the output image
 	cv2.imshow("Text Detection", image)
