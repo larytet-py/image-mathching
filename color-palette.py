@@ -220,7 +220,6 @@ if __name__ == '__main__':
   image_file = arguments['--image']
   cache_filename = arguments.get('--cache', ".color-palette.cache.yaml")
   rgb_distance_str = arguments.get('--distance', "20")
-  print(cache_filename)
   rgb_max_distance =  int(rgb_distance_str, 10)
 
   isInCache, color_palette = load_from_cache(cache_filename, image_file, rgb_max_distance)
