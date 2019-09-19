@@ -5,11 +5,8 @@ Returns color palette of the image
 
 Usage:
   color-palette.py -h | --help
-  color-palette.py --image <FILENAME>
-  color-palette.py --image <FILENAME> --compare <FILENAME>
-Example:
-  color-palette.py --image favicon.bmp 
-  color-palette.py --image favicon.bmp --compare favicon1.bmp
+  color-palette.py --image <FILENAME>  [--distance=<NUMBER>] [--cache=<FILENAME>]
+  color-palette.py --image <FILENAME> --compare <FILENAME> [--distance=<NUMBER>] [--cache=<FILENAME>]
    
 Options:
   -h --help               Show this screen

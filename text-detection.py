@@ -7,8 +7,6 @@ Collects areas containing text, returns
 Usage:
   text-detection.py -h | --help
   text-detection.py --image <FILENAME> --model <FILENAME> [--confidence <VALUE>] [--cache=<FILENAME>] [--collage=<FILENAME>]
-Example:
-  text-detection.py --image images/lebron_james.jpg --model frozen_east_text_detection.pb 
    
 Options:
   -h --help               Show this screen
