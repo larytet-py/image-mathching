@@ -178,13 +178,13 @@ if __name__ == '__main__':
 	confidence =  float(confidence_str)
 
 	text_boxes = text_areas(image_filename, model_filename, confidence)
-
+	'''
 	if collage_filename is not None:
 		collage = generate_collage(image_filename, collage_filename)
 		if arguments["--show"] is not None:
 			cv2.imshow("Text Detection", collage)
 			cv2.waitKey(0)
-
+	'''
 	if arguments["--show"] is not None:
 		show_text_boxes(image_filename)
 		cv2.waitKey(0)
