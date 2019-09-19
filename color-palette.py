@@ -54,6 +54,16 @@ def asvoid(arr):
   arr = numpy.ascontiguousarray(arr)
   return arr.view(numpy.dtype((numpy.void, arr.dtype.itemsize * arr.shape[-1])))
 
+def rgb_distance_linear_channel(c1, c2, channel):
+  c = abs(c1[channel]-c2[channel]) 
+  if c2[channel] != 0:
+    c = c / float(c2[channel])
+  elif c1[channel] != 0:
+    c = c / float(c1[channel])
+  else: c = 1
+
+  return c
+
 def rgb_distance_linear(c1, c2):
   '''
   This is a fast&dirty filter which is good for colors which are slighy off because of the problems
@@ -147,11 +157,15 @@ def palette_distance(color_palette1, color_palette2):
   color_palette_sorted2 = sorted(color_palette2.keys())
 
   palette_size = min(len(color_palette1), len(color_palette2))
-  distance = 0
+  distance = 1
   for idx in range(palette_size):
     c1 = (color_palette_sorted1[idx])
     c2 = (color_palette_sorted2[idx])
-    rgb_distance = rgb_distance_linear(c1, c2)
+    r = 1+rgb_distance_linear_channel(c1, c2, 0) 
+    g = 1+rgb_distance_linear_channel(c1, c2, 1) 
+    b = 1+rgb_distance_linear_channel(c1, c2, 2) 
+    rgb_distance = r * g * b
+
 
     # size of the area occupied by the color impacts the distance
     # Does not work ? May be will work for areas containing text?
@@ -163,10 +177,12 @@ def palette_distance(color_palette1, color_palette2):
       distance_occupied_area = abs(color_palette1[c1]-color_palette2[c2])/color_palette1[c2]
     rgb_distance = rgb_distance * (1 + distance_occupied_area)
     '''
+    distance = distance * rgb_distance
 
-    distance += rgb_distance
-
-  distance = (distance/palette_size)
+  if palette_size != 0:
+    distance = math.pow(distance, 1/float(palette_size))
+  else:
+    distance = 0
   return distance
 
 
@@ -243,6 +259,6 @@ if __name__ == '__main__':
   if distance == 0:
     print("{0}, {1} perfect match".format(image_file, compare_file))
   else:
-    print("{0}, {1} Distance {2:08.0f}".format(image_file, compare_file, distance))
+    print("{0}, {1} Distance {2:08.3f}".format(image_file, compare_file, distance))
 
 
