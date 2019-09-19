@@ -149,7 +149,9 @@ def generate_collage(image_filename, collage_filename):
 		confidences.append(confidence)
 		rectangles.append((startX, startY, endX, endY))
 		# see https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
+	logger.info("Discovered {0} text boxes".format(len(rectangles)))
 	rectangles = non_max_suppression(np.array(rectangles), probs=confidences)
+	logger.info("After suppression remained {0} text boxes".format(len(rectangles)))
 
 	w, h = 320, 200
 	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
@@ -157,6 +159,8 @@ def generate_collage(image_filename, collage_filename):
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
 		rectangle = cv2.resize(rectangle.copy(), dsize=(h, w), interpolation=cv2.INTER_CUBIC)
 		collage = np.vstack([collage, rectangle])
+	
+	cv2.imwrite(collage_filename, collage)
 
 	return collage
 
@@ -187,15 +191,12 @@ if __name__ == '__main__':
 	text_boxes = text_areas(image_filename, model_filename, confidence)
 	if collage_filename is not None:
 		collage = generate_collage(image_filename, collage_filename)
-		if arguments["--show"] is not None:
+		if arguments["--show"]:
 			cv2.imshow("Text Detection", collage)
 			cv2.waitKey(0)
 
-	if arguments["--show"] is not None:
+	if arguments["--show"]:
 		show_text_boxes(image_filename)
 		cv2.waitKey(0)
-
-
-
 
 
