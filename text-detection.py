@@ -124,36 +124,42 @@ def text_areas(image_filename, model_filename, confidence):
 
 			# compute both the starting and ending (x, y)-coordinates for
 			# the text prediction bounding box
-			endX = int(offsetX + (cos * xData1[x]) + (sin * xData2[x]))
-			endY = int(offsetY - (sin * xData1[x]) + (cos * xData2[x]))
-			startX = int(endX - w)
-			startY = int(endY - h)
+			endX = offsetX + (cos * xData1[x]) + (sin * xData2[x])
+			endY = offsetY - (sin * xData1[x]) + (cos * xData2[x])
+			startX = endX - w
+			startY = endY - h
 
 			# collect the bounding box coordinates and probability score 
 			# fix the scale
-			text_boxes.append(TextBox(scoresData[x], startX*ratioW, startY*ratioH, endX*ratioW, endY*ratioH))
+			text_boxes.append(TextBox(scoresData[x], int(startX*ratioW), int(startY*ratioH), int(endX*ratioW), int(endY*ratioH)))
 
 	# apply non-maxima suppression to suppress weak, overlapping bounding
 	# boxes
 	#boxes = non_max_suppression(np.array(rects), probs=confidences)
 	return text_boxes
 
-def collage(image_filename, collage_filename):
+def generate_collage(image_filename, collage_filename):
 	# load the input image 
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
+	rectangles = []
+	w = 160
+	h = 160
+	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
 	for (_, startX, startY, endX, endY) in text_boxes:
-		cv2.rectangle(image, (int(startX), int(startY)), (int(endX), int(endY)), (0, 255, 0), 2)
+		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
+		rectangle.resize(w,h)
+		collage = np.vstack([collage, rectangle])
 
-	# show the output image
-	cv2.imshow("Text Detection", image)
+	return collage
+
 
 def show_text_boxes(image_filename):
 	# load the input image 
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
 	for (_, startX, startY, endX, endY) in text_boxes:
-		cv2.rectangle(image, (int(startX), int(startY)), (int(endX), int(endY)), (0, 255, 0), 2)
+		cv2.rectangle(image, (startX, startY, endX, endY), (0, 255, 0), 2)
 
 	# show the output image
 	cv2.imshow("Text Detection", image)
@@ -174,11 +180,16 @@ if __name__ == '__main__':
 	text_boxes = text_areas(image_filename, model_filename, confidence)
 
 	if collage_filename is not None:
-		collage(image_filename, collage_filename)
+		collage = generate_collage(image_filename, collage_filename)
+		if arguments["--show"] is not None:
+			cv2.imshow("Text Detection", collage)
+			cv2.waitKey(0)
 
 	if arguments["--show"] is not None:
 		show_text_boxes(image_filename)
 		cv2.waitKey(0)
+
+
 
 
 

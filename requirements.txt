@@ -4,3 +4,4 @@ docopt
 numpy
 colormath
 #webcolors
+opencv-contrib-python
