@@ -13,7 +13,7 @@ Options:
   --image=<FILENAME>      Image to process
   --model=<FILENAME>      EAST model, for example https://github.com/larytet-py/image-mathching/releases/download/base-line/frozen_east_text_detection.pb 
                           [default: ./frozen_east_text_detection.pb]
-  --confidence=<NUMBER>   Confidence level that an area contains text [default: 0.6]
+  --confidence=<NUMBER>   Confidence level that an area contains text [default: 0.9]
   --cache=<FILENAME>      Cache filename to use [defualt: .text-detection.cache.yaml]
   --collage=<FILENAME>    Generate a collage of discovered text boxes
   --show                  Show the image with text boxes
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 
 	if collage_filename is not None:
 		collage(image_filename, collage_filename)
-		
+
 	if arguments["--show"] is not None:
 		show_text_boxes(image_filename)
 		cv2.waitKey(0)
