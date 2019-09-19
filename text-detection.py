@@ -124,8 +124,8 @@ def text_areas(image_filename, model_filename, confidence):
 
 			# compute both the starting and ending (x, y)-coordinates for
 			# the text prediction bounding box
-			endX = offsetX + (cos * xData1[x]) + (sin * xData2[x])
-			endY = offsetY - (sin * xData1[x]) + (cos * xData2[x])
+			endX = int(offsetX + (cos * xData1[x]) + (sin * xData2[x]))
+			endY = int(offsetY - (sin * xData1[x]) + (cos * xData2[x]))
 			startX = endX - w
 			startY = endY - h
 
