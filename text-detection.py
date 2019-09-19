@@ -124,8 +124,8 @@ def text_areas(image_filename, model_filename, confidence):
 
 			# compute both the starting and ending (x, y)-coordinates for
 			# the text prediction bounding box
-			endX = int(offsetX + (cos * xData1[x]) + (sin * xData2[x]))
-			endY = int(offsetY - (sin * xData1[x]) + (cos * xData2[x]))
+			endX = offsetX + (cos * xData1[x]) + (sin * xData2[x])
+			endY = offsetY - (sin * xData1[x]) + (cos * xData2[x])
 			startX = endX - w
 			startY = endY - h
 
@@ -159,7 +159,7 @@ def show_text_boxes(image_filename):
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
 	for (_, startX, startY, endX, endY) in text_boxes:
-		cv2.rectangle(image, (startX, startY, endX, endY), (0, 255, 0), 2)
+		cv2.rectangle(image, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
 	# show the output image
 	cv2.imshow("Text Detection", image)
