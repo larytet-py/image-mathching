@@ -151,12 +151,7 @@ def generate_collage(image_filename, collage_filename):
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
 		rectangle = rectangle.copy()
 		rectangle = cv2.resize(rectangle, dsize=(h, w), interpolation=cv2.INTER_CUBIC)
-		cv2.imshow("rectangle", rectangle)
-		cv2.waitKey(0)
 		collage = np.vstack([collage, rectangle])
-		count += 1
-		if count > 10:
-			break
 
 	return collage
 
