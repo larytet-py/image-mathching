@@ -31,6 +31,9 @@ import cv2
 
 
 def round32(x): 
+	'''
+	Dimensions must be multiple of 32 for EAST
+	'''
 	return (x+32) & ~31
 
 def text_areas(image_filename, model_filename, confidence):
@@ -41,7 +44,6 @@ def text_areas(image_filename, model_filename, confidence):
 	# load the input image and grab the image dimensions
 	image = cv2.imread(image_filename)
 	(H, W) = image.shape[:2]
-	# Must be multiple of 32 for EAST
 	(newW, newH) = (round32(H), round32(W))
 
 	ratioW = W / float(newW)
