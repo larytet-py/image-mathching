@@ -142,18 +142,20 @@ def generate_collage(image_filename, collage_filename):
 	# load the input image 
 	image = cv2.imread(image_filename)
 	# loop over the bounding boxes
+
+	confidences = []
 	rectangles = []
-	w = 320
-	h = 200
+	for (confidence, startX, startY, endX, endY) in text_boxes:
+		confidences.append(confidence)
+		rectangles.append((startX, startY, endX, endY))
+		# see https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
+	rectangles = non_max_suppression(np.array(rectangles), probs=confidences)
+
+	w, h = 320, 200
 	collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
-
-	# see https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
-	boxes = non_max_suppression(np.array(rects), probs=confidences)
-
-	for (_, startX, startY, endX, endY) in text_boxes:
+	for (startX, startY, endX, endY) in rectangles:
 		rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
-		rectangle = rectangle.copy()
-		rectangle = cv2.resize(rectangle, dsize=(h, w), interpolation=cv2.INTER_CUBIC)
+		rectangle = cv2.resize(rectangle.copy(), dsize=(h, w), interpolation=cv2.INTER_CUBIC)
 		collage = np.vstack([collage, rectangle])
 
 	return collage
