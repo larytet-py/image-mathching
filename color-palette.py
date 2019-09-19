@@ -5,18 +5,18 @@ Returns color palette of the image
 
 Usage:
   color-palette.py -h | --help
-  color-palette.py -f <FILENAME>
-  color-palette.py -f <FILENAME> -c <FILENAME>
+  color-palette.py --image <FILENAME>
+  color-palette.py --image <FILENAME> --compare <FILENAME>
 Example:
-  color-palette.py -f favicon.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
-  color-palette.py -f favicon.bmp -c favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
+  color-palette.py --image favicon.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
+  color-palette.py --image favicon.bmp --compare favicon1.bmp [--distance=<NUMBER>] [--cache=<FILENAME>]
    
 Options:
   -h --help               Show this screen.
-  -f --file=<FILENAME>    Image to process
-  -c --compare=<FILENAME> Image to compare
-  -d --distance=<NUMBER>  Maximum RGB distance between matching colors
-  -e --cache=<FILENAME>   Cache filename to use
+  --image=<FILENAME>      Image to process
+  --compare=<FILENAME>    Image to compare
+  --distance=<NUMBER>     Maximum RGB distance between matching colors [default: 20]
+  --cache=<FILENAME>      Cache filename to use [default: .color-palette.cache.yaml]
 '''
 
 import sys
@@ -215,17 +215,12 @@ def load_from_cache(cache_filename, image_file, max_distance):
 if __name__ == '__main__':
   arguments = docopt(__doc__, version='0.1')
   logging.basicConfig()    
-  logger = logging.getLogger('hamming')
+  logger = logging.getLogger('color-palette')
   logger.setLevel(logging.INFO)  
-  image_file = arguments['--file']
-
-  cache_filename = arguments['--cache'] 
-  if cache_filename is None:
-    cache_filename = ".cache.yaml"
-
-  rgb_distance_str = arguments['--distance']
-  if rgb_distance_str is None:
-    rgb_distance_str = "20"
+  image_file = arguments['--image']
+  cache_filename = arguments.get('--cache', ".color-palette.cache.yaml")
+  rgb_distance_str = arguments.get('--distance', "20")
+  print(cache_filename)
   rgb_max_distance =  int(rgb_distance_str, 10)
 
   isInCache, color_palette = load_from_cache(cache_filename, image_file, rgb_max_distance)

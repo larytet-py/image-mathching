@@ -1,12 +1,43 @@
 # USAGE
-# python text_detection.py --image images/lebron_james.jpg --east frozen_east_text_detection.pb
 
-# import the necessary packages
+
+'''text-detection.py
+Collects areas containing text, returns 
+
+Usage:
+  text-detection.py -h | --help
+  text-detection.py --image <FILENAME> --model <FILENAME> [--confidence <VALUE>] [--cache=<FILENAME>]
+Example:
+  text-detection.py --image images/lebron_james.jpg --east frozen_east_text_detection.pb 
+   
+Options:
+  -h --help               Show this screen.
+  --image=<FILENAME>      Image to process
+  --model=<FILENAME>      EAST model, usually a '.pb' file
+  --confidence=<NUMBER>   Confidence level that the area contains text, (default 0.6)
+  --cache=<FILENAME>      Cache filename to use
+'''
+
+
 from imutils.object_detection import non_max_suppression
 import numpy as np
 import argparse
 import time
 import cv2
+
+from docopt import docopt
+from collections import namedtuple
+import logging
+
+if __name__ == '__main__':
+  arguments = docopt(__doc__, version='0.1')
+  logging.basicConfig()    
+  logger = logging.getLogger('text-detection')
+  logger.setLevel(logging.INFO)  
+  image_file = arguments['--image']
+
+  cache_filename = arguments.get('--cache', ".text-detection.cache.yaml")
+  model_filename = arguments.get('--model', "./frozen_east_text_detection.pb")
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
