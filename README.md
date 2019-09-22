@@ -2,6 +2,8 @@
 
 Collect colors from the image, figure our the area occupied by each color, return sorted by area color palette.
 
+Script text-detection.py collects text boxes from the image, generate a "collage". The idea is that color palette 
+matching will work better for areas containing text (it does).
 
 Links:
 
