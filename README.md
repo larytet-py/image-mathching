@@ -1,6 +1,10 @@
 # image-mathching
 
-Collect colors from the given image(s), compare the colo palettes, return "distance" between the palettes.
+The scripts target phishing WEB sites and, potentially, phishing e-mails. 
+
+The color-palette script collects colors from the given image(s), compare the colo palettes, return "distance" between the palettes.
+This is a reasonably fast way to match screenshots of the WEB sites, flag suspicious phishing sites. The script can be a part of 
+the lab Grzegorz Jakowicz is building.
 
 Script text-detection.py collects text boxes from the image, generate a "collage". The idea is that color palette 
 matching will work better for areas containing text (it does).
