@@ -7,7 +7,7 @@ This is a reasonably fast way to match screenshots of the WEB sites, flag suspic
 the lab Grzegorz Jakowicz is building.
 
 Script text-detection.py collects text boxes from the image, generate a "collage". The idea is that color palette 
-matching will work better for areas containing text (it does).
+matching will work better for areas containing text (it does). Fuzzy hashes like ssdeep can perform better as well when running only for areas in the image containing text. 
 
 Links:
 
