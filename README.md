@@ -1,6 +1,6 @@
 # image-mathching
 
-Collect colors from the image, figure our the area occupied by each color, return sorted by area color palette.
+Collect colors from the given image(s), compare the colo palettes, return "distance" between the palettes.
 
 Script text-detection.py collects text boxes from the image, generate a "collage". The idea is that color palette 
 matching will work better for areas containing text (it does).
