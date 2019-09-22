@@ -9,6 +9,8 @@ the lab Grzegorz Jakowicz is building.
 Script text-detection.py collects text boxes from the image, generate a "collage". The idea is that color palette 
 matching will work better for areas containing text (it does). Fuzzy hashes like ssdeep can perform better as well when running only for areas in the image containing text. 
 
+ The pipeline handling the screenshots can start with a fuzzy hashes base solution like ssdeep. The fuzzy hash step can be done really fast. A Go application calculate 50M/s 256 bits hamming distances (https://confluence.corp.cyren.com/display/AR/Hamming+distance). If ssdeep does not find a match (negative) try the color palette approach (reasonably fast). If there is a match I would run OCR. We already run EAST in the previous step, discovered text boxes coordinates. We need only Kraken. 
+
 Links:
 
 * Based on https://stackoverflow.com/questions/18801218/build-a-color-palette-from-image-url
