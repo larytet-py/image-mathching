@@ -236,7 +236,7 @@ if __name__ == '__main__':
   arguments = docopt(__doc__, version='0.1')
   logging.basicConfig()    
   logger = logging.getLogger('color-palette')
-  logger.setLevel(logging.INFO)  
+  logger.setLevel(logging.DEBUG)  
   image_file = arguments['--image']
   cache_filename = arguments.get('--cache', ".color-palette.cache.yaml")
   rgb_distance_str = arguments.get('--distance', "20")

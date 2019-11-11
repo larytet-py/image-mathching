@@ -17,6 +17,11 @@ Options:
   --cache=<FILENAME>      Cache filename to use [defualt: .text-detection.cache.yaml]
   --collage=<FILENAME>    Generate a collage of discovered text boxes
   --show                  Show the image with text boxes
+
+Examples:
+Generate "collages"
+find ./images -name "*.png" | xargs -I FILE python3 text-detection.py --image FILE --model frozen_east_text_detection.pb  --confidence 0.6 --collage collages/FILE.collage.png
+
 '''
 
 
@@ -29,6 +34,7 @@ from imutils.object_detection import non_max_suppression
 import numpy as np
 import time
 import cv2
+import os
 
 
 def round32(x): 
@@ -160,6 +166,7 @@ def generate_collage(image_filename, collage_filename):
 		rectangle = cv2.resize(rectangle.copy(), dsize=(h, w), interpolation=cv2.INTER_CUBIC)
 		collage = np.vstack([collage, rectangle])
 	
+	logger.info("Writing to file {}".format(collage_filename))
 	cv2.imwrite(collage_filename, collage)
 
 	return collage
@@ -179,7 +186,7 @@ if __name__ == '__main__':
 	arguments = docopt(__doc__, version='0.1')
 	logging.basicConfig()    
 	logger = logging.getLogger('text-detection')
-	logger.setLevel(logging.INFO)  
+	logger.setLevel(logging.DEBUG)
 	image_filename = arguments['--image']
 
 	cache_filename = arguments.get('--cache', ".text-detection.cache.yaml")
@@ -187,6 +194,9 @@ if __name__ == '__main__':
 	model_filename = arguments.get('--model', "./frozen_east_text_detection.pb")
 	confidence_str = arguments.get('--confidence', "0.6")
 	confidence =  float(confidence_str)
+	if collage_filename is not None and os.path.exists(collage_filename):
+		logger.error("Skip existing file {}".format(collage_filename))
+		exit(1)
 
 	text_boxes = text_areas(image_filename, model_filename, confidence)
 	if collage_filename is not None:
@@ -199,4 +209,5 @@ if __name__ == '__main__':
 		show_text_boxes(image_filename)
 		cv2.waitKey(0)
 
+	exit(0)
 
