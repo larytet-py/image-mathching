@@ -14,6 +14,13 @@ Options:
   --compare=<FILENAME>    Image to compare
   --distance=<NUMBER>     Maximum RGB distance between matching colors [default: 20]
   --cache=<FILENAME>      Cache filename to use [default: .color-palette.cache.yaml]
+
+Examples:
+Generate "collages"
+find ./images -name "*.png" | xargs -I FILE python3 text-detection.py --image FILE --model frozen_east_text_detection.pb  --confidence 0.6 --collage collages/FILE.collage.png
+
+Compare color palettes of the collages
+find ./collages/images/ -name "*.png" | xargs  -I FILE python3 color-palette.py --image FILE --compare ./collages/images/5cd9feb8632e734a912f27d8.png.collage.png --distance 20
 '''
 
 import sys
