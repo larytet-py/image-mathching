@@ -197,6 +197,10 @@ if __name__ == '__main__':
 	if collage_filename is not None and os.path.exists(collage_filename):
 		logger.error("Skip existing file {}".format(collage_filename))
 		exit(1)
+	collage_dir = os.path.dirname(collage_filename)
+	if not os.path.exists(collage_dir):
+		logger.error("Output directory '{}' does not exist".format(collage_dir))
+		exit(1)
 
 	text_boxes = text_areas(image_filename, model_filename, confidence)
 	if collage_filename is not None:
