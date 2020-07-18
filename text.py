@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
-import cv2
-
+from imutils.object_detection import non_max_suppression
 
 class TextBox():
     def __init__(self, confidence, startX, startY, endX, endY):
@@ -126,6 +125,28 @@ class Image():
                 text_boxes.append(TextBox(scoresData[x], int(startX*ratioW), int(startY*ratioH), int(endX*ratioW), int(endY*ratioH)))
 
         return text_boxes
+
+    def collage(text_boxes):
+        image = self.image
+
+        confidences = []
+        rectangles = []
+        for (confidence, startX, startY, endX, endY) in text_boxes:
+            confidences.append(confidence)
+            rectangles.append((startX, startY, endX, endY))
+            # see https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
+        rectangles = non_max_suppression(np.array(rectangles), probs=confidences)
+        logger.info(f"Discovered {len(text boxes)},  after suppression remained {len(rectangles)} text boxes")
+
+        w, h = 100, 60
+        collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
+        for (startX, startY, endX, endY) in rectangles:
+            rectangle = image[startY:endY, startX:endX] #cv2.cv.GetSubRect(image, (startX, startY, endX, endY))
+            rectangle = cv2.resize(rectangle.copy(), dsize=(h, w), interpolation=cv2.INTER_CUBIC)
+            collage = np.vstack([collage, rectangle])
+        
+        return collage
+
 
 def alignment32(x): 
 	'''
