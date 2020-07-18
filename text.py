@@ -16,9 +16,11 @@ class TextBox():
     
 
 class Image():
-    def __init(self, image, model, logger):
+    def __init(self, image, model, confidence, logger):
         '''
         Image can be a result of cv2.imread or a filename
+        Use 0.9 for confidence
+        Use model from https://github.com/larytet-py/image-mathching/releases/download/base-line/frozen_east_text_detection.pb
         '''
         if isinstance(image, basestring):
             logger.info(f"Loading image from a file {image}")
@@ -123,9 +125,6 @@ class Image():
                 # fix the scale
                 text_boxes.append(TextBox(scoresData[x], int(startX*ratioW), int(startY*ratioH), int(endX*ratioW), int(endY*ratioH)))
 
-        # apply non-maxima suppression to suppress weak, overlapping bounding
-        # boxes
-        #boxes = non_max_suppression(np.array(rects), probs=confidences)
         return text_boxes
 
 def alignment32(x): 
