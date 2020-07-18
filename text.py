@@ -136,7 +136,7 @@ class Image():
             rectangles.append((startX, startY, endX, endY))
             # see https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
         rectangles = non_max_suppression(np.array(rectangles), probs=confidences)
-        logger.info(f"Discovered {len(text boxes)},  after suppression remained {len(rectangles)} text boxes")
+        self.logger.info(f"Discovered {len(text boxes)},  after suppression remained {len(rectangles)} text boxes")
 
         w, h = 100, 60
         collage = 255*np.ones(shape=[w, h, 3], dtype=np.uint8)
