@@ -1,14 +1,33 @@
 import cv2
+import numpy as np
+import cv2
 
+
+class TextBox():
+    def __init__(self, confidence, startX, startY, endX, endY):
+        values = {}
+        values['confidence'] = confidence
+        values['startX'] = startX
+        values['startY'] = startY
+        values['endX'] = endX
+        values['endY'] = endY
+        self.values = values
+
+    
 
 class Image():
-    def __init(self, image):
+    def __init(self, image, model, logger):
         '''
         Image can be a result of cv2.imread or a filename
         '''
         if isinstance(image, basestring):
+            logger.info(f"Loading image from a file {image}")
             image = cv2.imread(image)
-        self.image = image
+        if isinstance(model, basestring):
+            logger.info(f"Loading EAST text detector from a file {model}")
+            model = cv2.dnn.readNet(model)
+
+        self.image, self.model, self.logger = image, model, logger
 
     def get_text_areas(self):
         '''
@@ -34,7 +53,7 @@ class Image():
             "feature_fusion/concat_3"]
 
         # load the pre-trained EAST text detector
-        logger.info("Loading EAST text detector...")
+        self.logger.info("Loading EAST text detector...")
         net = cv2.dnn.readNet(model_filename)
 
         # construct a blob from the image and then perform a forward pass of
@@ -47,8 +66,8 @@ class Image():
             (123.68, 116.78, 103.94), swapRB=True, crop=False)
 
         start = time.time()
-        net.setInput(blob)
-        (scores, geometry) = net.forward(layerNames)
+        self.model.setInput(blob)
+        (scores, geometry) = self.model.forward(layerNames)
         end = time.time()
 
         # show timing information on text prediction
@@ -59,7 +78,6 @@ class Image():
         # confidence scores
         (numRows, numCols) = scores.shape[2:4]
 
-        TextBox = namedtuple('TextBox', ['confidence', 'startX', 'startY', 'endX', 'endY'])
         text_boxes = []
         # loop over the number of rows
         for y in range(0, numRows):
