@@ -1,7 +1,5 @@
+opencv-contrib-python
 Image
 Pillow
-docopt
 numpy
 colormath
-#webcolors
-opencv-contrib-python
