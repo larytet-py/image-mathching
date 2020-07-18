@@ -127,6 +127,9 @@ class Image():
         return text_boxes
 
     def collage(text_boxes):
+        '''
+        Call cv2.imwrite to output the collage to a file
+        '''
         image = self.image
 
         confidences = []
